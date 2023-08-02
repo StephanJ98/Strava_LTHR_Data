@@ -38,11 +38,14 @@ function App() {
 
   const main = async (rawfile: File) => {
     if (age !== 0) setFlag(true)
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
     if (rawfile !== undefined && rawfile?.path.endsWith('.fit')) {
       try {
         const fileContent = await readFileAsArrayBuffer(rawfile)
         const fitParser = new FitParser()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         fitParser.parse(fileContent, (error, result) => {
           if (error) {
             console.error(error)
