@@ -3,8 +3,9 @@ import { VictoryAxis, VictoryBar, VictoryChart } from 'victory'
 import DropZone from './components/DropZone'
 import Header from './components/Header'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const FitParser = require('fit-file-parser')
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import FitParser from 'fit-file-parser'
 import { HeartRateExtractor, LTHRZonesPercentage } from './utils/tools'
 
 type Zones = {

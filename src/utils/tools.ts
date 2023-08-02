@@ -8,24 +8,16 @@ export const TheoricalMaxHeartRate = (age: number, gender: any) => {
             return 223 - age
     }
 }
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const HeartRateExtractor = (contenido): number[] => {
     try {
         const records = contenido.records
-        let arr: number[] = []
+        const arr: number[] = []
 
         for (let i = 0; i < records.length; i++) {
             if (records[i].heart_rate != undefined) arr.push(records[i].heart_rate)
         }
-
-        // const json = fitDecoder.parseRecords(fitDecoder.fit2json(data.buffer));
-        // const hrArray = fitDecoder.getRecordFieldValue(json, 'record', 'heart_rate');
-        // let arr: number[] = [];
-        // hrArray.forEach((elem: number | undefined) => {
-        //     if (elem != undefined)
-        //         arr.push(elem);
-        // })
-
         return arr
     }
     catch (error) {
@@ -34,7 +26,7 @@ export const HeartRateExtractor = (contenido): number[] => {
 }
 
 export const LTHRZones = (age: any, gender: any, sport: any) => {
-    let maxHeartRate = TheoricalMaxHeartRate(age, gender)
+    const maxHeartRate = TheoricalMaxHeartRate(age, gender)
     if (String(sport).toLocaleLowerCase() === 'c') {
         return {
             "zone1": (maxHeartRate * 0.56).toFixed(0),
@@ -58,7 +50,7 @@ export const LTHRZones = (age: any, gender: any, sport: any) => {
 }
 
 export const LTHRZone = (age: any, gender: any, heartRate: number, sport: any) => {
-    let maxHeartRate = TheoricalMaxHeartRate(age, gender)
+    const maxHeartRate = TheoricalMaxHeartRate(age, gender)
     if (String(sport).toLocaleLowerCase() === 'c') {
         if (heartRate < (maxHeartRate * 0.56)) {
             return 'zone1'
@@ -90,7 +82,7 @@ export const LTHRZone = (age: any, gender: any, heartRate: number, sport: any) =
 }
 
 export const LTHRZonesPercentage = (age: any, gender: any, sport: any, arr: any[]) => {
-    let zones = {
+    const zones = {
         z1: 0,
         z2: 0,
         z3: 0,
@@ -99,7 +91,7 @@ export const LTHRZonesPercentage = (age: any, gender: any, sport: any, arr: any[
     }
     let count = 0
     arr.forEach((elem: any) => {
-        let zone = LTHRZone(age, gender, elem, sport)
+        const zone = LTHRZone(age, gender, elem, sport)
         switch (zone) {
             case 'zone1':
                 zones.z1 = zones.z1 + 1
