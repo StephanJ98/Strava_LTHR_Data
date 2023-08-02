@@ -6,18 +6,11 @@ import Header from './components/Header'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import FitParser from 'fit-file-parser'
-import { HeartRateExtractor, LTHRZonesPercentage } from './utils/tools'
-
-type Zones = {
-  z1: string
-  z2: string
-  z3: string
-  z4: string
-  z5: string
-}
+import { GradeExtractor, GradePercentage, HeartRateExtractor, LTHRZonesPercentage } from './utils/tools'
 
 function App() {
-  const [zones, setZones] = useState<Zones>({ z1: '', z2: '', z3: '', z4: '', z5: '' })
+  const [heartRateZones, setHeartRateZones] = useState({ z1: '', z2: '', z3: '', z4: '', z5: '' })
+  const [gradeZones, setGradeZones] = useState({ zu_0: '', z0_3: '', z3_5: '', z5_8: '', z8_10: '', z10: ''})
   const [gender, setGender] = useState<string>('w')
   const [age, setAge] = useState<number>(0)
   const [sport, setSport] = useState<string>('c')
@@ -39,8 +32,8 @@ function App() {
 
   const main = async (rawfile: File) => {
     if (age !== 0) setFlag(true)
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (rawfile !== undefined && rawfile?.path.endsWith('.fit')) {
       try {
         const fileContent = await readFileAsArrayBuffer(rawfile)
@@ -55,22 +48,14 @@ function App() {
 
           // ToDo
           const heartRates: number[] = HeartRateExtractor(result)
-          setZones(LTHRZonesPercentage(age, gender, sport, heartRates))
+          setHeartRateZones(LTHRZonesPercentage(age, gender, sport, heartRates))
+          const grades: number[] = GradeExtractor(result)
+          setGradeZones(GradePercentage(grades))
         })
       } catch (error) {
         console.error(error)
       }
     }
-  }
-
-  const printFunc = async () => {
-    document.getElementById('gbBTN')!.style.display = 'none'
-    document.getElementById('pBTN')!.style.display = 'none'
-    document.getElementById('chart')!.style.width = '90%'
-    window.print()
-    document.getElementById('gbBTN')!.style.display = 'inline'
-    document.getElementById('pBTN')!.style.display = 'inline'
-    document.getElementById('chart')!.style.width = '60%'
   }
 
   const handleFilesDropped = (acceptedFiles: File[]) => {
@@ -109,31 +94,69 @@ function App() {
           <DropZone onFilesDropped={handleFilesDropped} />
         </div>
       ) : (
-        <div className={'w-[60%]'} id='chart'>
-          <button id='gbBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => window.location.reload()}>Go Back</button>
-          <button id='pBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => printFunc()}>Print</button>
-          <VictoryChart
-            domainPadding={20}
-          >
-            <VictoryAxis
-              tickValues={[1, 2, 3, 4, 5]}
-              tickFormat={["Recover", "Endurance", "Aerobic", "Threshold", "Anaerobic"]}
-            />
-            <VictoryAxis
-              dependentAxis
-              tickFormat={(x) => (`${x}%`)}
-            />
-            <VictoryBar
-              data={[
-                { x: 1, y: Number(zones.z1) },
-                { x: 2, y: Number(zones.z2) },
-                { x: 3, y: Number(zones.z3) },
-                { x: 4, y: Number(zones.z4) },
-                { x: 5, y: Number(zones.z5) }
-              ]}
-              labels={({ datum }) => `${datum.y}%`}
-            />
-          </VictoryChart>
+        <div className='flex flex-col justify-center items-center w-full'>
+          <div className='w-auto'>
+            <button id='gbBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => window.location.reload()}>Go Back</button>
+            <button id='pBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => window.print()}>Print</button>
+          </div>
+          <div className='flex flex-col md:flex-row flex-wrap w-full justify-center items-center md:justify-evenly'>
+            <div className={'w-full md:w-[50%]'} id='chart'>
+              <VictoryChart
+                domainPadding={20}
+              >
+                <VictoryAxis
+                  tickValues={[1, 2, 3, 4, 5]}
+                  tickFormat={["Recover", "Endurance", "Aerobic", "Threshold", "Anaerobic"]}
+                />
+                <VictoryAxis
+                  dependentAxis
+                  tickFormat={(x) => (`${x}%`)}
+                />
+                <VictoryBar
+                  data={[
+                    { x: 1, y: Number(heartRateZones.z1) },
+                    { x: 2, y: Number(heartRateZones.z2) },
+                    { x: 3, y: Number(heartRateZones.z3) },
+                    { x: 4, y: Number(heartRateZones.z4) },
+                    { x: 5, y: Number(heartRateZones.z5) }
+                  ]}
+                  labels={({ datum }) => `${datum.y}%`}
+                />
+              </VictoryChart>
+            </div>
+            
+            <div className={'w-full md:w-[50%]'} id='chart'>
+              <VictoryChart
+                domainPadding={20}
+              >
+                <VictoryAxis
+                  tickValues={[1, 2, 3, 4, 5, 6]}
+                  tickFormat={[`<0%
+                  slope`, `0%-3%
+                  slope`, `3%-5%
+                  slope`, `5%-8%
+                  slope`, `8%-10%
+                  slope`, `>10%
+                  slope`]}
+                />
+                <VictoryAxis
+                  dependentAxis
+                  tickFormat={(x) => (`${x}%`)}
+                />
+                <VictoryBar
+                  data={[
+                    { x: 1, y: Number(gradeZones.zu_0) },
+                    { x: 2, y: Number(gradeZones.z0_3) },
+                    { x: 3, y: Number(gradeZones.z3_5) },
+                    { x: 4, y: Number(gradeZones.z5_8) },
+                    { x: 5, y: Number(gradeZones.z8_10) },
+                    { x: 6, y: Number(gradeZones.z10) }
+                  ]}
+                  labels={({ datum }) => `${datum.y}%`}
+                />
+              </VictoryChart>
+            </div>
+          </div>
         </div>
       )}
     </div>

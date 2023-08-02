@@ -25,6 +25,23 @@ export const HeartRateExtractor = (contenido): number[] => {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const GradeExtractor = (contenido): number[] => {
+    try {
+        const records = contenido.records
+        const arr: number[] = []
+
+        for (let i = 0; i < records.length; i++) {
+            if (records[i].grade != undefined) arr.push(records[i].grade)
+        }
+        return arr
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 export const LTHRZones = (age: any, gender: any, sport: any) => {
     const maxHeartRate = TheoricalMaxHeartRate(age, gender)
     if (String(sport).toLocaleLowerCase() === 'c') {
@@ -125,5 +142,36 @@ export const LTHRZonesPercentage = (age: any, gender: any, sport: any, arr: any[
         z3: ((zones.z3 / count) * 100).toFixed(2),
         z4: ((zones.z4 / count) * 100).toFixed(2),
         z5: ((zones.z5 / count) * 100).toFixed(2)
+    }
+}
+
+export const GradePercentage = (arr: number[]) => {
+    const zones = {
+        zu_0: 0,
+        z0_3: 0,
+        z3_5: 0,
+        z5_8: 0,
+        z8_10: 0,
+        z10: 0
+    }
+    let count = 0
+    arr.forEach(elem => {
+        if (elem <= 0) { zones.zu_0 += 1 }
+        if (elem > 0 && elem <= 3) { zones.z0_3 += 1 }
+        if (elem > 3 && elem <= 5) { zones.z3_5 += 1 }
+        if (elem > 5 && elem <= 8) { zones.z5_8 += 1 }
+        if (elem > 8 && elem <= 10) { zones.z8_10 += 1 }
+        if (elem > 10) { zones.z10 += 1 }
+
+        count++
+    })
+
+    return {
+        zu_0: ((zones.zu_0 / count) * 100).toFixed(2),
+        z0_3: ((zones.z0_3 / count) * 100).toFixed(2),
+        z3_5: ((zones.z3_5 / count) * 100).toFixed(2),
+        z5_8: ((zones.z5_8 / count) * 100).toFixed(2),
+        z8_10: ((zones.z8_10 / count) * 100).toFixed(2),
+        z10: ((zones.z10 / count) * 100).toFixed(2)
     }
 }
