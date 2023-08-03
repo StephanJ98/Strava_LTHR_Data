@@ -1,4 +1,4 @@
-export const TheoricalMaxHeartRate = (age: number, gender: any) => {
+export const TheoricalMaxHeartRate = (age: number, gender: string) => {
     switch (String(gender).toLocaleLowerCase()) {
         case 'm':
             return 220 - age
@@ -43,76 +43,73 @@ export const GradeExtractor = (contenido): number[] => {
     }
 }
 
-export const LTHRZones = (age: any, gender: any) => {
+export const LTHRZones = (age: number, gender: string) => {
     const maxHeartRate = TheoricalMaxHeartRate(age, gender)
     return {
-        "zone1": (maxHeartRate * 0.56).toFixed(0),
-        "zone2": (maxHeartRate * 0.66).toFixed(0),
-        "zone3": (maxHeartRate * 0.75).toFixed(0),
-        "zone4": (maxHeartRate * 0.85).toFixed(0),
-        "zone5": (maxHeartRate).toFixed(0)
+        "Recover": (maxHeartRate * 0.56).toFixed(0),
+        "Endurance": (maxHeartRate * 0.66).toFixed(0),
+        "Aerobic": (maxHeartRate * 0.75).toFixed(0),
+        "Threshold": (maxHeartRate * 0.85).toFixed(0),
+        "Anaerobic": (maxHeartRate).toFixed(0)
     }
 }
 
-export const LTHRZone = (age: any, gender: any, heartRate: number) => {
+export const LTHRZone = (age: number, gender: string, heartRate: number) => {
     const maxHeartRate = TheoricalMaxHeartRate(age, gender)
     if (heartRate < (maxHeartRate * 0.56)) {
-        return 'zone1'
+        return 'Recover'
     } else if ((heartRate >= (maxHeartRate * 0.56)) && (heartRate <= (maxHeartRate * 0.66))) {
-        return 'zone2'
+        return 'Endurance'
     } else if ((heartRate > (maxHeartRate * 0.66)) && (heartRate <= (maxHeartRate * 0.75))) {
-        return 'zone3'
+        return 'Aerobic'
     } else if ((heartRate > (maxHeartRate * 0.75)) && (heartRate <= (maxHeartRate * 0.85))) {
-        return 'zone4'
+        return 'Threshold'
     } else if (heartRate > (maxHeartRate * 0.85)) {
-        return 'zone5'
+        return 'Anaerobic'
     }
 }
 
-export const LTHRZonesPercentage = (age: any, gender: any, arr: any[]) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const LTHRZonesPercentage = (age: number, gender: string, arr: any[]) => {
     const zones = {
-        z1: 0,
-        z2: 0,
-        z3: 0,
-        z4: 0,
-        z5: 0
+        Recover: 0,
+        Endurance: 0,
+        Aerobic: 0,
+        Threshold: 0,
+        Anaerobic: 0
     }
     let count = 0
-    arr.forEach((elem: any) => {
+    arr.forEach((elem) => {
         const zone = LTHRZone(age, gender, elem)
         switch (zone) {
-            case 'zone1':
-                zones.z1 = zones.z1 + 1
-                count++
+            case 'Recover':
+                zones.Recover += 1
                 break;
-            case 'zone2':
-                zones.z2 = zones.z2 + 1
-                count++
+            case 'Endurance':
+                zones.Endurance += 1
                 break;
-            case 'zone3':
-                zones.z3 = zones.z3 + 1
-                count++
+            case 'Aerobic':
+                zones.Aerobic += 1
                 break;
-            case 'zone4':
-                zones.z4 = zones.z4 + 1
-                count++
+            case 'Threshold':
+                zones.Threshold += 1
                 break;
-            case 'zone5':
-                zones.z5 = zones.z5 + 1
-                count++
+            case 'Anaerobic':
+                zones.Anaerobic += 1
                 break;
             default:
                 console.log('Error: Key not found.')
                 break;
         }
+        count++
     })
 
     return {
-        z1: ((zones.z1 / count) * 100).toFixed(2),
-        z2: ((zones.z2 / count) * 100).toFixed(2),
-        z3: ((zones.z3 / count) * 100).toFixed(2),
-        z4: ((zones.z4 / count) * 100).toFixed(2),
-        z5: ((zones.z5 / count) * 100).toFixed(2)
+        Recover: ((zones.Recover / count) * 100).toFixed(1),
+        Endurance: ((zones.Endurance / count) * 100).toFixed(1),
+        Aerobic: ((zones.Aerobic / count) * 100).toFixed(1),
+        Threshold: ((zones.Threshold / count) * 100).toFixed(1),
+        Anaerobic: ((zones.Anaerobic / count) * 100).toFixed(1)
     }
 }
 
@@ -138,11 +135,11 @@ export const GradePercentage = (arr: number[]) => {
     })
 
     return {
-        zu_0: ((zones.zu_0 / count) * 100).toFixed(2),
-        z0_3: ((zones.z0_3 / count) * 100).toFixed(2),
-        z3_5: ((zones.z3_5 / count) * 100).toFixed(2),
-        z5_8: ((zones.z5_8 / count) * 100).toFixed(2),
-        z8_10: ((zones.z8_10 / count) * 100).toFixed(2),
-        z10: ((zones.z10 / count) * 100).toFixed(2)
+        zu_0: ((zones.zu_0 / count) * 100).toFixed(1),
+        z0_3: ((zones.z0_3 / count) * 100).toFixed(1),
+        z3_5: ((zones.z3_5 / count) * 100).toFixed(1),
+        z5_8: ((zones.z5_8 / count) * 100).toFixed(1),
+        z8_10: ((zones.z8_10 / count) * 100).toFixed(1),
+        z10: ((zones.z10 / count) * 100).toFixed(1)
     }
 }

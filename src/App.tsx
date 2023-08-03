@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { VictoryAxis, VictoryBar, VictoryChart } from 'victory'
 import DropZone from './components/DropZone'
 import Header from './components/Header'
 
@@ -7,9 +6,10 @@ import Header from './components/Header'
 // @ts-ignore
 import FitParser from 'fit-file-parser'
 import { GradeExtractor, GradePercentage, HeartRateExtractor, LTHRZonesPercentage } from './utils/tools'
+import Chart from './components/Chart'
 
 function App() {
-  const [heartRateZones, setHeartRateZones] = useState({ z1: '', z2: '', z3: '', z4: '', z5: '' })
+  const [heartRateZones, setHeartRateZones] = useState({ Recover: '', Endurance: '', Aerobic: '', Threshold: '', Anaerobic: '' })
   const [gradeZones, setGradeZones] = useState({ zu_0: '', z0_3: '', z3_5: '', z5_8: '', z8_10: '', z10: '' })
   const [gender, setGender] = useState<string>('w')
   const [age, setAge] = useState<number>(0)
@@ -30,10 +30,9 @@ function App() {
   }
 
   const main = async (rawfile: File) => {
-    if (age !== 0) setFlag(true)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    if (rawfile !== undefined && rawfile?.path.endsWith('.fit')) {
+    if (rawfile !== undefined && rawfile?.path.endsWith('.fit') && age !== 0) {
       try {
         const fileContent = await readFileAsArrayBuffer(rawfile)
         const fitParser = new FitParser()
@@ -54,6 +53,7 @@ function App() {
       } catch (error) {
         console.error(error)
       }
+      setFlag(true)
     }
   }
 
@@ -62,7 +62,7 @@ function App() {
   }
 
   return (
-    <div className='text-center w-full h-full flex flex-col items-center gap-8 p-8'>
+    <div className='text-center w-full h-full flex flex-col items-center gap-8 py-8 px-2'>
       <Header />
       {(flag !== true) ? (
         <div className={'w-10/12 flex flex-col justify-between items-center gap-8'}>
@@ -87,66 +87,22 @@ function App() {
       ) : (
         <div className='flex flex-col justify-center items-center w-full'>
           <div className='w-auto'>
-            <button id='gbBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => window.location.reload()}>Go Back</button>
-            <button id='pBTN' className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold' onClick={() => window.print()}>Print</button>
+            <button className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold print:hidden' onClick={() => window.location.reload()}>Go Back</button>
+            <button className='p-1 m-1 border-2 border-solid border-neutral-600 bg-neutral-300 rounded-md font-semibold print:hidden' onClick={() => window.print()}>Print</button>
           </div>
-          <div className='flex flex-col md:flex-row flex-wrap w-full justify-center items-center md:justify-evenly'>
-            <div className={'w-full md:w-[50%]'} id='chart'>
-              <VictoryChart
-                domainPadding={20}
-              >
-                <VictoryAxis
-                  tickValues={[1, 2, 3, 4, 5]}
-                  tickFormat={["Recover", "Endurance", "Aerobic", "Threshold", "Anaerobic"]}
-                />
-                <VictoryAxis
-                  dependentAxis
-                  tickFormat={(x) => (`${x}%`)}
-                />
-                <VictoryBar
-                  data={[
-                    { x: 1, y: Number(heartRateZones.z1) },
-                    { x: 2, y: Number(heartRateZones.z2) },
-                    { x: 3, y: Number(heartRateZones.z3) },
-                    { x: 4, y: Number(heartRateZones.z4) },
-                    { x: 5, y: Number(heartRateZones.z5) }
-                  ]}
-                  labels={({ datum }) => `${datum.y}%`}
-                />
-              </VictoryChart>
-            </div>
+          <div className='flex flex-col lg:flex-row flex-wrap w-full justify-center items-center lg:justify-evenly'>
+            <Chart
+              data={heartRateZones}
+              name='HeartRate Percentages'
+              type='radar'
+            />
 
-            <div className={'w-full md:w-[50%]'} id='chart'>
-              <VictoryChart
-                domainPadding={20}
-              >
-                <VictoryAxis
-                  tickValues={[1, 2, 3, 4, 5, 6]}
-                  tickFormat={[`<0%
-                  slope`, `0%-3%
-                  slope`, `3%-5%
-                  slope`, `5%-8%
-                  slope`, `8%-10%
-                  slope`, `>10%
-                  slope`]}
-                />
-                <VictoryAxis
-                  dependentAxis
-                  tickFormat={(x) => (`${x}%`)}
-                />
-                <VictoryBar
-                  data={[
-                    { x: 1, y: Number(gradeZones.zu_0) },
-                    { x: 2, y: Number(gradeZones.z0_3) },
-                    { x: 3, y: Number(gradeZones.z3_5) },
-                    { x: 4, y: Number(gradeZones.z5_8) },
-                    { x: 5, y: Number(gradeZones.z8_10) },
-                    { x: 6, y: Number(gradeZones.z10) }
-                  ]}
-                  labels={({ datum }) => `${datum.y}%`}
-                />
-              </VictoryChart>
-            </div>
+            <Chart
+              data={gradeZones}
+              name='Slope'
+              type='line'
+            />
+
           </div>
         </div>
       )}
