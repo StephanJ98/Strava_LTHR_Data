@@ -10,10 +10,9 @@ import { GradeExtractor, GradePercentage, HeartRateExtractor, LTHRZonesPercentag
 
 function App() {
   const [heartRateZones, setHeartRateZones] = useState({ z1: '', z2: '', z3: '', z4: '', z5: '' })
-  const [gradeZones, setGradeZones] = useState({ zu_0: '', z0_3: '', z3_5: '', z5_8: '', z8_10: '', z10: ''})
+  const [gradeZones, setGradeZones] = useState({ zu_0: '', z0_3: '', z3_5: '', z5_8: '', z8_10: '', z10: '' })
   const [gender, setGender] = useState<string>('w')
   const [age, setAge] = useState<number>(0)
-  const [sport, setSport] = useState<string>('c')
   const [flag, setFlag] = useState<boolean>(false)
 
   const readFileAsArrayBuffer = (file: File) => {
@@ -48,7 +47,7 @@ function App() {
 
           // ToDo
           const heartRates: number[] = HeartRateExtractor(result)
-          setHeartRateZones(LTHRZonesPercentage(age, gender, sport, heartRates))
+          setHeartRateZones(LTHRZonesPercentage(age, gender, heartRates))
           const grades: number[] = GradeExtractor(result)
           setGradeZones(GradePercentage(grades))
         })
@@ -80,14 +79,6 @@ function App() {
             <div className={'flex flex-row justify-between text-2xl w-full'}>
               <p className='font-semibold'>Age: </p>
               <input className='rounded-md border-2 border-solid px-1 w-[50%]' type='number' name='age' onChange={(e) => setAge(Number(e.target.value))} />
-            </div>
-
-            <div className={'flex flex-row justify-between text-2xl w-full'}>
-              <p className='font-semibold'>Sport: </p>
-              <select className='rounded-md border-2 border-solid px-1' name="sport" onChange={(e) => setSport(e.target.value)}>
-                <option value='c'>Cycling</option>
-                <option value='r'>Running</option>
-              </select>
             </div>
 
           </div>
@@ -124,7 +115,7 @@ function App() {
                 />
               </VictoryChart>
             </div>
-            
+
             <div className={'w-full md:w-[50%]'} id='chart'>
               <VictoryChart
                 domainPadding={20}
